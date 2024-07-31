@@ -6,6 +6,7 @@ from utils.pre_sentence import sentence_processor
 from utils.model_process import compress_process, analyze_sentiment
 import logging
 import asyncio
+import json
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -25,14 +26,17 @@ app.add_middleware(
 # 웹소켓 연결을 저장할 리스트
 active_connections = []
 
+user_sentences = {}
+
 
 # 문장 요약 및 감정 추론을 위한 비동기 함수
-async def process_sentences():
+async def process_sentences(sender):
     while True:
         try:
-            if len(sentence_processor.textlist) >= 5:
+            if len(user_sentences.get(sender, [])) >= 5:
+                logger.info(f"len text: {len(user_sentences.get(sender, []))}")
                 # 문장 요약 및 감정 추론 로직
-                sentences = sentence_processor.textlist[:5]
+                sentences = user_sentences[sender][:5]
                 combined_text = ' '.join(sentences)
 
                 # 문장 요약
@@ -44,7 +48,8 @@ async def process_sentences():
                 logger.info(f"Sentiment analysis results: {sentiment_results}")
 
                 # 처리된 문장 제거
-                sentence_processor.textlist = sentence_processor.textlist[5:]
+                user_sentences[sender] = user_sentences[sender][5:]
+                # sentence_processor.textlist = sentence_processor.textlist[5:]
 
             # 현재 처리 중인 문장이 있다면 로그에 출력
             if sentence_processor.current_sentence:
@@ -60,7 +65,8 @@ async def process_sentences():
 
 @app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(process_sentences())
+    # asyncio.create_task(process_sentences())
+    pass
 
 
 @app.websocket("/ws")
@@ -79,14 +85,30 @@ async def websocket_endpoint(websocket: WebSocket):
 
 async def process_message(message: str, websocket: WebSocket):
     logger.info(f"Received message: {message}")
-    processed_messages = sentence_processor.process_chat(message)
-    logger.info(f"Processed messages: {processed_messages}")
+    try:
+        data = json.loads(message)
+        sender = data.get("sender")
+        text = data.get("text")
 
-    # 웹소켓을 통해 모든 클라이언트에게 메시지 전송
-    for connection in active_connections:
-        await connection.send_text(message)
-    logger.info(f"Sent response to all clients: {message}")
+        if sender and text:
+            # sender별로 문장 리스트 관리
+            if sender not in user_sentences:
+                user_sentences[sender] = []
+                asyncio.create_task(process_sentences(sender))
+            
+            user_sentences[sender].append(text)
+            logger.info(f"Current sentence list for {sender}: {user_sentences[sender]}")
+            processed_messages = sentence_processor.process_chat(text)
+            # logger.info(f"Processed messages from {sender}: {processed_messages}")
 
+            # 웹소켓을 통해 모든 클라이언트에게 메시지 전송
+            for connection in active_connections:
+                await connection.send_text(json.dumps({"sender": sender, "text": text}))
+            logger.info(f"Sent response to all clients: {message}")
+        else:
+            logger.error("Invalid message format")
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
 
 @app.get("/")
 async def root():

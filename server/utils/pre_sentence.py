@@ -1,5 +1,6 @@
 # pre_sentence.py
 from mecab import MeCab
+# from mecab
 import logging
 
 logging.basicConfig(level=logging.INFO)
