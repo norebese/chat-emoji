@@ -28,16 +28,18 @@ active_connections = []
 
 user_sentences = {}
 
+user_processed_messages = {}
 
 # 문장 요약 및 감정 추론을 위한 비동기 함수
 async def process_sentences(sender):
     while True:
         try:
-            if len(user_sentences.get(sender, [])) >= 5:
-                logger.info(f"len text: {len(user_sentences.get(sender, []))}")
+            if len(user_processed_messages.get(sender, [])) >= 5:
+                logger.info(f"len text: {len(user_processed_messages.get(sender, []))}")
                 # 문장 요약 및 감정 추론 로직
-                sentences = user_sentences[sender][:5]
+                sentences = user_processed_messages[sender][:5]
                 combined_text = ' '.join(sentences)
+                logger.info(f"combined_text: {combined_text}")
 
                 # 문장 요약
                 summarized_text = compress_process(combined_text)
@@ -48,12 +50,15 @@ async def process_sentences(sender):
                 logger.info(f"Sentiment analysis results: {sentiment_results}")
 
                 # 처리된 문장 제거
-                user_sentences[sender] = user_sentences[sender][5:]
+                logger.info(f"처리전 문장: {user_processed_messages[sender]}")
+                user_processed_messages[sender] = user_processed_messages[sender][5:]
+                sentence_processor.textlist[sender] = []
+                logger.info(f"처리된 문장: {user_processed_messages[sender]}")
                 # sentence_processor.textlist = sentence_processor.textlist[5:]
 
             # 현재 처리 중인 문장이 있다면 로그에 출력
-            if sentence_processor.current_sentence:
-                logger.info(f"Current incomplete sentence: {' '.join(sentence_processor.current_sentence)}")
+            if sentence_processor.current_sentence[sender]:
+                logger.info(f"Current incomplete sentence: {' '.join(sentence_processor.current_sentence[sender])}")
 
         except AttributeError as e:
             logger.error(f"AttributeError in process_sentences: {e}")
@@ -98,8 +103,11 @@ async def process_message(message: str, websocket: WebSocket):
             
             user_sentences[sender].append(text)
             logger.info(f"Current sentence list for {sender}: {user_sentences[sender]}")
-            processed_messages = sentence_processor.process_chat(text)
-            # logger.info(f"Processed messages from {sender}: {processed_messages}")
+            # processed_messages = sentence_processor.process_chat(text)
+            if sender not in user_processed_messages:
+                user_processed_messages[sender] = []
+            user_processed_messages[sender] = sentence_processor.process_chat(sender, text)
+            logger.info(f"Processed messages from {sender}: {user_processed_messages}")
 
             # 웹소켓을 통해 모든 클라이언트에게 메시지 전송
             for connection in active_connections:
