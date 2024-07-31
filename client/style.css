@@ -21,6 +21,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     height: 100vh;
     box-sizing: border-box;
     overflow: hidden; /* body에는 스크롤바가 생기지 않도록 설정 */
@@ -30,7 +31,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    margin-bottom: 50px;
+    margin-bottom: 35px;
 }
 
 .title{
@@ -68,7 +69,7 @@ body {
     -ms-overflow-style: none;
  }
 .content_box{
-    height: 60%;
+    height: 100%;
     width: 100%;
     box-sizing: border-box;
     overflow-y: hidden;
