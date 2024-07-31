@@ -30,7 +30,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    margin-bottom: 12px;
+    margin-bottom: 50px;
 }
 
 .title{
@@ -41,14 +41,25 @@ body {
     display: flex;
     justify-content: space-evenly;
 }
-
-.profile {
-    position: relative;
-    clip-path: circle(35% at center);
+.profile{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
-
-.profile> img{
-    max-height:150px;
+.userimg {
+    position: relative;
+    clip-path: circle(45% at center);
+    display: flex;
+    flex-direction: column;
+}
+.username{
+    font-size: 1.4em;
+    height: 30px;
+}
+.user{color: #6200ea;}
+.userimg> img{
+    max-height:200px;
 }
 .chat_area {
     overflow-y: auto; /* 세로 스크롤바가 생기도록 설정 */
@@ -80,15 +91,15 @@ body {
     user-select:text;
 }
 .send {
-    background-color: #f7f0e4;
-    text-align: right;
+    background-color: #9b62f5;
+    color: aliceblue;
     margin-left: auto;
 }
 .receive {
-    background-color: #9b62f5;
-    color: aliceblue;
-    text-align: left;
+    background-color: #f7f0e4;
+    text-align: right;
     margin-right: auto;
+    text-align: left;
 }
 .footer {
     width: 100%;
