@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>WebSocket Test</h1>
+<input type="text" id="messageInput">
+<button onclick="sendMessage()">Send</button>
+<div id="messages"></div>
+
+<script>
+let ws = new WebSocket("ws://localhost:8000/ws");
+
+ws.onmessage = function(event) {
+    document.getElementById("messages").innerHTML += event.data + "<br>";
+};
+
+function sendMessage() {
+    let message = document.getElementById("messageInput").value;
+    ws.send(message);
+}
+</script>
+</body>
+</html>
