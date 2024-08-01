@@ -5,14 +5,19 @@ import uvicorn
 import logging
 import asyncio
 
+import config
 from utils.pre_sentence import sentence_processor
 from utils.model_process import compress_process, analyze_sentiment
-from utils.image_process
-from utils.translation_keyword
+from utils.image_process import generate_image
+from utils.translation_keyword import deepl
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+deepl_api = config.DEEPL_API
+sdwebui_api = config.SDWEUI_API
+
 
 app = FastAPI()
 
@@ -46,12 +51,21 @@ async def process_sentences():
                 sentiment_results = analyze_sentiment(summarized_text)
                 logger.info(f"감정 추론 결과: {sentiment_results}")
 
+                # 감정 번역
+                translated_text = deepl(deepl_api, sentiment_results, summarized_text)
+                logger.info(f"번역 결과: {translated_text}")
+
+                emotions = translated_text['processed']['emotion']
+
                 # 이미지 생성
-                image = create_image(summarized_text)
-                logger.info(f"그림 생성 결과:{image.message}")
+                image_base64 = generate_image(sdwebui_api, emotions)
+                logger.info(f"그림 생성")
 
                 # 처리된 문장 제거
                 sentence_processor.textlist = sentence_processor.textlist[5:]
+
+                # 분석 결과를 모든 클라이언트에게 전송
+                await send_analysis_to_clients(summarized_text, sentiment_results, image_base64)
 
             # 현재 처리 중인 문장이 있다면 로그에 출력
             if sentence_processor.current_sentence:
@@ -64,6 +78,15 @@ async def process_sentences():
 
         await asyncio.sleep(1)  # 1초마다 확인
 
+
+async def send_analysis_to_clients(summarized_text, sentiment_results, translated_text, image_base64):
+    message = json.dumps({
+        "type": "analysis",
+        "summary": summarized_text,
+        "sentiment": sentiment_results,
+        "image": image_base64
+    })
+    await manager.broadcast(message)
 
 @app.on_event("startup")
 async def startup_event():

@@ -1,17 +1,8 @@
 import deepl
-import os
-from dotenv import load_dotenv
 
-# 예시 인풋
-#t1 = [{'label': '불평/불만', 'score': 0.7809296250343323}, {'label': '짜증', 'score': 0.8571460247039795}, {'label': '힘듦/지침', 'score': 0.7137463688850403}]
-#t2 = '지하철에 사람도 많고 지하철에 사람도 많아서 힘들어서 죽는줄 오늘까지 다 완성해야 하는데 시간이 없어 시간이 없어  시간이 없어 내일까지 완성해야 하는데 시간이 없어 시간이 없어'
 
-# env로드, 및 값을 불러와 할당
-load_dotenv()
-auth_key = os.getenv('DeepL_API_Key')
-translator = deepl.Translator(auth_key)
-
-def deep_l(emotion_list,sentence,translator=translator) :
+def deep_l(deepl_api, emotion_list, sentence):
+    translator = deepl.Translator(deepl_api)
     result = {}
     emotion_before = [] # 번역 전의 감정:확률을 담을 리스트
     emotion_after = [] # 번역 후의 감정:확률을 담을 리스트
@@ -45,7 +36,23 @@ def deep_l(emotion_list,sentence,translator=translator) :
     #결과 반환
     return result
 
-#test= deep_l(t1,t2)
-#print(test)
-#{'ref': {'emotion': [('불평/불만', 0.78), ('짜증', 0.86), ('힘듦/지침', 0.71)], 'sentence': '지하철에 사람도 많고 지하철에 사람도 많아서 힘들어서 죽는줄 오늘까지 다 완성해야 하는데 시간이 없어 시간이 없어  시간이 없어 내일까지 완성해야 하는데 시간이 없어 시간이 없어'}, 'processed': {'emotion': [('Complain/Complain', 0.78), ('Irritated', 0.86), ('Difficult/Instructive', 0.71)], 'sentence': "There are a lot of people in the subway and there are a lot of people in the subway and it's killing me I have to finish it by today and I don't have time I don't have time I don't have time I don't have time I don't have time I don't have time I don't have time I don't have time I don't have time"}}
-
+'''
+{
+    'ref': {
+        'emotion': [
+                ('불평/불만', 0.78), 
+                ('짜증', 0.86), 
+                ('힘듦/지침', 0.71)
+            ], 
+        'sentence': '지하철에 사람도 많고 지하철에 사람도 많아서 힘들어서 죽는줄 오늘까지 다 완성해야 하는데 시간이 없어 시간이 없어  시간이 없어 내일까지 완성해야 하는데 시간이 없어 시간이 없어'
+    }, 
+    'processed': {
+        'emotion': [
+                ('Complain/Complain', 0.78), 
+                ('Irritated', 0.86), 
+                ('Difficult/Instructive', 0.71)
+            ], 
+        'sentence': "There are a lot of people in the subway and there are a lot of people in the subway and it's killing me I have to finish it by today and I don't have time I don't have time I don't have time I don't have time I don't have time I don't have time I don't have time I don't have time I don't have time"
+    }
+}
+'''
