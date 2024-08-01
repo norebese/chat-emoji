@@ -1,0 +1,60 @@
+# PyCharm 관련
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# 파이썬 관련
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 가상 환경
+venv/
+env/
+ENV/
+
+# 배포 관련
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+
+# 로그 파일
+*.log
+
+# 유닛 테스트 / 커버리지 리포트
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# 환경 변수 파일
+.env
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# 프로젝트 특정 파일 (필요에 따라 추가/수정)
+# config.ini
+# secrets.json

@@ -2,10 +2,13 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from utils.pre_sentence import sentence_processor
-from utils.model_process import compress_process, analyze_sentiment
 import logging
 import asyncio
+
+from utils.pre_sentence import sentence_processor
+from utils.model_process import compress_process, analyze_sentiment
+from utils.image_process
+from utils.translation_keyword
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -37,18 +40,22 @@ async def process_sentences():
 
                 # 문장 요약
                 summarized_text = compress_process(combined_text)
-                logger.info(f"Summarized text: {summarized_text}")
+                logger.info(f"문장 요약 결과: {summarized_text}")
 
                 # 감정 추론
                 sentiment_results = analyze_sentiment(summarized_text)
-                logger.info(f"Sentiment analysis results: {sentiment_results}")
+                logger.info(f"감정 추론 결과: {sentiment_results}")
+
+                # 이미지 생성
+                image = create_image(summarized_text)
+                logger.info(f"그림 생성 결과:{image.message}")
 
                 # 처리된 문장 제거
                 sentence_processor.textlist = sentence_processor.textlist[5:]
 
             # 현재 처리 중인 문장이 있다면 로그에 출력
             if sentence_processor.current_sentence:
-                logger.info(f"Current incomplete sentence: {' '.join(sentence_processor.current_sentence)}")
+                logger.info(f"현재 미완성 문장: {' '.join(sentence_processor.current_sentence)}")
 
         except AttributeError as e:
             logger.error(f"AttributeError in process_sentences: {e}")
@@ -78,14 +85,14 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 async def process_message(message: str, websocket: WebSocket):
-    logger.info(f"Received message: {message}")
+    logger.info(f"메시지 수신: {message}")
     processed_messages = sentence_processor.process_chat(message)
-    logger.info(f"Processed messages: {processed_messages}")
+    logger.info(f"메시지 결합: {processed_messages}")
 
     # 웹소켓을 통해 모든 클라이언트에게 메시지 전송
     for connection in active_connections:
         await connection.send_text(message)
-    logger.info(f"Sent response to all clients: {message}")
+    logger.info(f"채팅방에 채팅 출력: {message}")
 
 
 @app.get("/")

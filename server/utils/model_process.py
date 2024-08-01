@@ -34,7 +34,10 @@ def analyze_sentiment(text):
     for output in pipe(text)[0]:
         if output["score"] > 0.4:
             results.append(output)
-    return results
+    # Sort the results by score in descending order and take the top 3
+    top_3_results = sorted(results, key=lambda x: x["score"], reverse=True)[:3]
+
+    return top_3_results
 
 
 # txt = 'ㅋㅋㅋ 오늘 날씨 흐림. 쪄 죽겠다 ㅜㅜ 올 때 메로나 사와~! 아 오늘 한강공원 가려고 했는데...'
