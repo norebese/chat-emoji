@@ -150,3 +150,106 @@ button[type="submit"]:hover {
         width: 80vw;
     }
 }
+
+.footer {
+    display: none; 
+}
+
+#nameInput{
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 1.2em;
+    border: 1px solid #ddd;
+    overflow: auto;
+    border-radius: 8px;
+    margin-right: 10px;
+    font-family: 'Pretendard-Regular';
+    resize: none;
+}
+
+#submitName{
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #6200ea;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#SpeechBubble {
+    position: absolute;
+    transform-origin: 0% 100%;
+    text-align: center;
+    background-color: #5a5a5a;
+    color: white;
+    border-radius: 10px;
+    width: 150px;
+    padding: 10px;
+    right: 210px;
+    top: 60px;
+    transform: scale(0);
+    animation-fill-mode: forwards;
+  }
+
+  #SpeechBubble::before {
+    content: "";
+    display: block;
+    width: 0;
+    position: absolute;
+    bottom: -25px;
+    left: 5px;
+    border-style: solid;
+    border-width: 15px;
+    border-color: #5a5a5a transparent transparent #5a5a5a;
+    transform: rotate(10deg);
+  }
+
+  #SpeechBubble2 {
+    position: absolute;
+    transform-origin: 0% 100%;
+    text-align: center;
+    background-color: #5a5a5a;
+    color: white;
+    border-radius: 10px;
+    width: 120px;
+    padding: 10px;
+    left: 240px;
+    top: 60px;
+    transform: scale(0);
+    animation-fill-mode: forwards;
+  }
+
+  #SpeechBubble2::before {
+    content: "";
+    display: block;
+    width: 0;
+    position: absolute;
+    bottom: -25px;
+    right: 5px;
+    border-style: solid;
+    border-width: 15px;
+    border-color: #5a5a5a transparent transparent #5a5a5a;
+    transform: rotate(440deg);
+  }
+
+  @keyframes expand-bounce {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.25);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shrink {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0);
+    }
+  }

@@ -4,27 +4,37 @@
     <meta charset="UTF-8">
     <title>Emotion Chat</title>
     <link rel="stylesheet" href="./style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./script.js" defer></script>
 </head>
 <body>
+    <div>
+        <div id="SpeechBubble">정보 없음</div>
+    </div>
+    <div>
+        <div id="SpeechBubble2">정보 없음</div>
+    </div>
     <div class="header">
         <div class="title">
             <h1>Emotion Chat</h1>
         </div>
         <div class="profile_area">
             <div class="profile another">
-                <div class="userimg">
-                    <img src="./img1.png">
+                <div class="userimg" id="profileLeft">
+                    <img id="yourImage" src="./avatar_male_man_person_user_icon.png">
+                    <div id="SpeechBubble2"></div>
                 </div>
-                <div class="username">
-                    상대방
+                <div class="username" id="userProfileName2">
+                    None
                 </div>
             </div>
             <div class="profile user">
-                <div class="userimg">
-                    <img src="./img2.png">
+                <div class="userimg" id="profileRight">
+                    <img id="myImage" src="./avatar_user_woman_female_person_icon.png">
+                    <div id="SpeechBubble"></div>
                 </div>
-                <div class="username">
-                    나
+                <div class="username" id="userProfileName">
+                    None(me)
                 </div>
             </div>
         </div>
@@ -32,20 +42,17 @@
     <div class="content_box">
         <div class="chat_area">
             <!--채팅 로그는 이곳에 쌓입니다.-->
-            <div class="chat_box send">이곳에 채팅이 들어갑니다. send class는 보내는 채팅이며 </div>
-            <div class="chat_box receive">receive class가 추가되면 이렇게 상대방으로부터 받는 채팅이 됩니다.</div>
-            <div class="chat_box receive">이곳에 채팅이 들어갑니다.</div>
-            <div class="chat_box receive">이곳에 채팅이 들어갑니다.</div>
-            <div class="chat_box send">이곳에 채팅이 들어갑니다.이곳에 채팅이 들어갑니다.이곳에 채팅이 들어갑니다.이곳에 채팅이 들어갑니다.이곳에 채팅이 들어갑니다.이곳에 채팅이들어갑니다.</div>
-            <div class="chat_box send">이곳에 채팅이 들어갑니다.</div>
-            <div class="chat_box send">이곳에 채팅이 들어갑니다.</div>
         </div>
     </div>
     <div class="footer">
-        <form>
-        <textarea placeholder="이곳을 눌러 채팅을 시작하세요!"></textarea>
-        <button type="submit">보내기</button>
+        <form onsubmit="return sendMessage();">
+            <textarea id="messageInput" placeholder="이곳을 눌러 채팅을 시작하세요!"></textarea>
+            <button type="submit">보내기</button>
         </form>
+    </div>
+    <div class="name_input" id="nameInputDiv">
+        <input type="text" id="nameInput" placeholder="이름을 입력하세요">
+        <button id="submitName">확인</button>
     </div>
 </body>
 </html>
