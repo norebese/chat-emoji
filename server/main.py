@@ -111,7 +111,7 @@ async def process_message(message: str, websocket: WebSocket):
 
             # 웹소켓을 통해 모든 클라이언트에게 메시지 전송
             for connection in active_connections:
-                await connection.send_text(json.dumps({"sender": sender, "text": text}))
+                await connection.send_text(json.dumps({"sender": sender, "text": text, "type": "message"}))
             logger.info(f"Sent response to all clients: {message}")
         else:
             logger.error("Invalid message format")
