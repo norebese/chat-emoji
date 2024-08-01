@@ -2,11 +2,13 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import logging
+import asyncio
+
 from utils.pre_sentence import sentence_processor
 from utils.model_process import compress_process, analyze_sentiment
 from utils.image_process
-import logging
-import asyncio
+from utils.translation_keyword
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
