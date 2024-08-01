@@ -2,22 +2,14 @@ $(document).ready(function() {
     const speechBubble = $("#SpeechBubble");
     const speechBubble2 = $("#SpeechBubble2");
 
-    let profileRightEmotion = {
-        "화남": "40%",
-        "기쁨": "50%",
-        "슬픔": "10%"
-    };
+    let profileRightEmotion = {};
 
-    let profileLeftEmotion = {
-        "화남": "20%",
-        "기쁨": "70%",
-        "슬픔": "10%"
-    };
+    let profileLeftEmotion = {};
 
     function updateSpeechBubble(bubble, emotions) {
         let content = "";
         for (let [emotion, percentage] of Object.entries(emotions)) {
-            content += `${emotion}: ${percentage}<br>`;
+            content += `${emotion}: ${percentage.toFixed(2)}<br>`;
         }
         bubble.html(content);
     }
@@ -61,6 +53,7 @@ $(document).ready(function() {
 let ws = new WebSocket("ws://localhost:8000/ws");
 let userName;
 let userName2;
+let image64;
 
 document.getElementById('submitName').onclick = function() {
     userName = document.getElementById('nameInput').value.trim();
@@ -71,13 +64,17 @@ document.getElementById('submitName').onclick = function() {
     } else {
         alert("이름을 입력해주세요.");
     }
+    // sample = "iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAYAAAB/HSuDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe"
+    // const base64Url = `data:image/png;base64,${sample}`;
+    // const imgElement = document.getElementById('yourImage');
+    // imgElement.src = base64Url;
 };
 
 function sendMessage() {
     let messageInput = document.getElementById("messageInput");
     let name = userName.trim();
     let message = messageInput.value.trim();
-
+    
     if (message !== "") {
         let data = JSON.stringify({ sender: name, text: message });
         ws.send(data);
@@ -93,7 +90,35 @@ document.getElementById("messageInput").addEventListener("keypress", function(ev
     }
 });
 
-ws.onmessage = function(event) {
+async function processImage(data) {
+    console.log(data);
+    let image64 = data.image;
+
+    // document.getElementById('summary').textContent = data.summary;
+    // document.getElementById('sentiment').textContent = JSON.stringify(data.sentiment);
+    // let sentimentArray = data.summary;
+    // let sentiment = {};
+
+    // sentimentArray.forEach(item => {
+    //     sentiment[item.label] = item.score;
+    // });
+
+    // if (sender === userName) {
+    //     profileRightEmotion = sentiment;
+    // } else {
+    //     profileLeftEmotion = sentiment;
+    // }
+
+    if(data.sender == userName){
+        let imgElement = document.getElementById('myImage');
+        imgElement.src = 'data:image/png;base64,' + image64;
+    }else{
+        let imgElement = document.getElementById('yourImage');
+        imgElement.src = 'data:image/png;base64,' + image64;
+    }
+}
+
+ws.onmessage = async function(event) {
     let data = JSON.parse(event.data);
     if (!userName2 && data.sender != userName) {
         userName2 = data.sender;
@@ -109,11 +134,21 @@ ws.onmessage = function(event) {
         }
         messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.text}`;
         document.querySelector(".chat_area").appendChild(messageElement);
-    } else if (data.type === 'image') {
-        // 이미지를 base64로 받은 경우
-        let sample = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAC0lEQVR42mP8/wcAAgABAQAYPkfMAAAAAElFTkSuQmCC';
-        let imgData = data.image;
-        let imgElement = document.getElementById('userProfileImage');
-        imgElement.src = 'data:image/png;base64,' + imgData; // 프로필 이미지 변경
+    } else if (data.type === 'analysis') {
+        await processImage(data);
+    }else if (data.type === 'sentiment_results') {
+        let sender = data.sender;
+        let sentimentArray = data.data;
+        let sentiment = {};
+
+        sentimentArray.forEach(item => {
+            sentiment[item.label] = item.score;
+        });
+
+        if (sender === userName) {
+            profileRightEmotion = sentiment;
+        } else {
+            profileLeftEmotion = sentiment;
+        }
     }
 };

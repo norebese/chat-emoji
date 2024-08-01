@@ -2,15 +2,22 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import websockets
 from utils.pre_sentence import sentence_processor
 from utils.model_process import compress_process, analyze_sentiment
+from utils.image_process import generate_image
+from utils.translation_keyword import deep_l
 import logging
 import asyncio
 import json
+import config
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+deepl_api = config.DEEPL_API_KEY
+sdwebui_api = config.SDWEBUI_API
 
 app = FastAPI()
 
@@ -49,12 +56,28 @@ async def process_sentences(sender):
                 sentiment_results = analyze_sentiment(summarized_text)
                 logger.info(f"Sentiment analysis results: {sentiment_results}")
 
+                # 감정 번역
+                translated_text = deep_l(deepl_api, sentiment_results, summarized_text)
+                logger.info(f"번역 결과: {translated_text}")
+
+                emotions = translated_text['processed']['emotion']
+
+                # 이미지 생성
+                image_base64 = generate_image(sdwebui_api, emotions)
+                logger.info(f"그림 생성")
+
+                 # 분석 결과를 모든 클라이언트에게 전송
+                await send_analysis_to_clients(summarized_text, sentiment_results, image_base64, sender)
+
                 # 처리된 문장 제거
                 logger.info(f"처리전 문장: {user_processed_messages[sender]}")
                 user_processed_messages[sender] = user_processed_messages[sender][5:]
                 sentence_processor.textlist[sender] = []
                 logger.info(f"처리된 문장: {user_processed_messages[sender]}")
                 # sentence_processor.textlist = sentence_processor.textlist[5:]
+
+                for connection in active_connections:
+                    await connection.send_text(json.dumps({"sender": sender, "type": "sentiment_results", "data": sentiment_results}))
 
             # 현재 처리 중인 문장이 있다면 로그에 출력
             if sentence_processor.current_sentence[sender]:
@@ -66,6 +89,18 @@ async def process_sentences(sender):
             logger.error(f"Unexpected error in process_sentences: {e}")
 
         await asyncio.sleep(1)  # 1초마다 확인
+
+async def send_analysis_to_clients(summarized_text, sentiment_results, image_base64, sender):
+    message = json.dumps({
+        "type": "analysis",
+        "summary": summarized_text,
+        "sentiment": sentiment_results,
+        "image": image_base64,
+        "sender": sender
+    })
+    for connection in active_connections:
+        await connection.send_text(message)
+
 
 
 @app.on_event("startup")
