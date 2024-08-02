@@ -48,7 +48,8 @@ body {
 
 .profile_area{
     display: none;
-    justify-content: space-between;
+    position: relative;
+    justify-content: space-around;
 }
 .profile{
     display: flex;
@@ -196,7 +197,7 @@ button:hover {
     background-color: #5a5a5a;
     color: white;
     border-radius: 10px;
-    width: 250px;
+    width: 200px;
     padding: 10px;
     right: 280px;
     top: 120px;
@@ -224,10 +225,11 @@ button:hover {
     background-color: #5a5a5a;
     color: white;
     border-radius: 10px;
-    width: 250px;
+    width: 200px;
     padding: 10px;
-    left: 280px;
-    top: 260px;
+    z-index: 99;
+    left: 35%;
+    /* bottom: 10px; */
     transform: scale(0);
     animation-fill-mode: forwards;
   }
@@ -237,12 +239,12 @@ button:hover {
     display: block;
     width: 0;
     position: absolute;
-    bottom: 15px;
-    left: 0px;
+    bottom: -10px;
+    left: -6px;
     border-style: solid;
     border-width: 15px;
     border-color: #5a5a5a transparent transparent #5a5a5a;
-    transform: rotate(-100deg);
+    transform: rotate(20deg);
   }
 
   @keyframes expand-bounce {
@@ -312,4 +314,7 @@ button:hover {
     text-align: center;
     align-items: center;
     justify-content: center;
+}
+#space{
+    margin-top: 10%;
 }

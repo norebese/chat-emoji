@@ -69,15 +69,11 @@ async def process_sentences(sender):
                 emotions = translated_text['processed']['emotion']
 
                 # # 이미지 생성
-                # image_base64 = generate_image(sdwebui_api, emotions)
-                # logger.info(f"그림 생성")
+                image_base64 = generate_image(sdwebui_api, emotions)
+                logger.info(f"그림 생성")
 
                 # 분석 결과를 모든 클라이언트에게 전송
-                await send_analysis_to_clients(summarized_text, sentiment_results, 'image_base64', sender) # 주석 풀기
-                # 주석 풀기# 주석 풀기# 주석 풀기# 주석 풀기
-                # 주석 풀기# 주석 풀기# 주석 풀기# 주석 풀기
-                # 주석 풀기# 주석 풀기# 주석 풀기# 주석 풀기
-                # 주석 풀기# 주석 풀기# 주석 풀기# 주석 풀기
+                await send_analysis_to_clients(summarized_text, sentiment_results, image_base64, sender)
 
                 # 처리된 문장 제거
                 logger.info(f"처리전 문장: {user_processed_messages[sender]}")
