@@ -15,7 +15,7 @@ class SentenceProcessor:
 
     def check_verb(self, sentence):
         pos_text = self.mecab.pos(sentence)
-        logger.info(f"Morpheme analysis for '{sentence}': {pos_text}")
+        # logger.info(f"Morpheme analysis for '{sentence}': {pos_text}")
         return any(pos.startswith(('VV', 'VA', 'XSV')) for _, pos in pos_text)
 
     def process_chat(self, sender, chat_message):
@@ -34,8 +34,8 @@ class SentenceProcessor:
             # 현재 문장 초기화
             self.current_sentence[sender] = []
 
-        logger.info(f"Current sentence for {sender}: {self.current_sentence[sender]}")
-        logger.info(f"Current textlist for {sender}: {self.textlist[sender]}")
+        # logger.info(f"Current sentence for {sender}: {self.current_sentence[sender]}")
+        # logger.info(f"Current textlist for {sender}: {self.textlist[sender]}")
 
         return self.textlist[sender], self.current_sentence[sender]
 

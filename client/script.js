@@ -7,11 +7,11 @@ $(document).ready(function() {
     let profileLeftEmotion = {};
 
     async function updateSpeechBubble(bubble, emotions) {
-        console.log(profileRightEmotion);
-        console.log(profileLeftEmotion);
+        // console.log(profileRightEmotion);
+        // console.log(profileLeftEmotion);
         let content = "";
         for (let [emotion, percentage] of Object.entries(emotions)) {
-            content += `${emotion}: ${percentage.toFixed(2)}<br>`;
+            content += `${emotion}: ${percentage}<br>`;
         }
         bubble.html(content);
     }
@@ -23,9 +23,9 @@ $(document).ready(function() {
             "animation-duration": "0.25s",
             "display": "block"
         });
-        // setTimeout(() => {
-        //     hideSpeechBubble(bubble);
-        // }, 5000);
+        setTimeout(() => {
+            hideSpeechBubble(bubble);
+        }, 5000);
     }
 
     function hideSpeechBubble(bubble) {
@@ -109,7 +109,7 @@ $(document).ready(function() {
         let data = JSON.parse(event.data);
         if (!userName2 && data.sender !== userName) {
             userName2 = data.sender;
-            console.log(userName2)
+            // console.log(userName2)
             document.getElementById('userProfileName2').textContent = userName2 + ' (상대방)';
             document.getElementById('yourImage').src = "./avatar_male_man_person_user_icon.png"
         }
@@ -144,12 +144,17 @@ $(document).ready(function() {
                 profileLeftEmotion = sentiment
                 showSpeechBubble(speechBubble2, sentiment);
             }
-        }else if (data.type === 'sentiment_results') {
+        }else if (data.type === 'sentiment_results') {  
             let sentimentArray = data.data;
             let sentiment = {};
-            
+            // console.log(sentimentArray)
             sentimentArray.forEach(item => {
-                sentiment[item.label] = item.score;
+                // sentiment[item.label] = parseFloat(item.score) * 100 + '%';
+                sentiment[item.label] = parseInt(Number(item.score) * 100) + '%';
+                // console.log(typeof(item.score))/
+                // console.log(parseInt(Number(item.score) * 100) + '%')
+                // console.log(sentiment)
+                // console.log(sentiment)
             });
 
             if(data.sender == userName){
@@ -163,7 +168,7 @@ $(document).ready(function() {
     };
 
     async function processImage(data) {
-        console.log(data);
+        // console.log(data);
         let image64 = data.image;
 
         if (data.sender === userName) {
