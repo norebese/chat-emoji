@@ -21,7 +21,9 @@ pipe = TextClassificationPipeline(
 
 # 문장 요약 모델
 def compress_process(inputs):
-    inputs = compress_tokenizer(inputs, max_length=512, truncation=True, return_tensors="pt")
+    combined_text = " ".join(inputs[2:])
+    print('combined_text', combined_text)
+    inputs = compress_tokenizer(combined_text, max_length=512, truncation=True, return_tensors="pt")
     output = compress_model.generate(**inputs, num_beams=3, do_sample=True, min_length=10, max_length=64)
     decoded_output = compress_tokenizer.batch_decode(output, skip_special_tokens=True)[0]
     result = nltk.sent_tokenize(decoded_output.strip())[0]

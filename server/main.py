@@ -37,41 +37,51 @@ user_sentences = {}
 
 user_processed_messages = {}
 
+current_sentence = {}
+
+base64Image = ''
+
+allText = []
+
 # 문장 요약 및 감정 추론을 위한 비동기 함수
 async def process_sentences(sender):
     while True:
         try:
-            if len(user_processed_messages.get(sender, [])) >= 5:
+            if len(user_processed_messages.get(sender, [])) == 1:
                 logger.info(f"len text: {len(user_processed_messages.get(sender, []))}")
                 # 문장 요약 및 감정 추론 로직
-                sentences = user_processed_messages[sender][:5]
+                sentences = user_processed_messages[sender][:1]
                 combined_text = ' '.join(sentences)
                 logger.info(f"combined_text: {combined_text}")
 
                 # 문장 요약
-                summarized_text = compress_process(combined_text)
+                summarized_text = compress_process(allText)
                 logger.info(f"Summarized text: {summarized_text}")
-
+                
                 # 감정 추론
-                sentiment_results = analyze_sentiment(summarized_text)
+                sentiment_results = analyze_sentiment(combined_text)
                 logger.info(f"Sentiment analysis results: {sentiment_results}")
 
                 # 감정 번역
-                translated_text = deep_l(deepl_api, sentiment_results, summarized_text)
+                translated_text = deep_l(deepl_api, sentiment_results, combined_text)
                 logger.info(f"번역 결과: {translated_text}")
 
                 emotions = translated_text['processed']['emotion']
 
-                # 이미지 생성
-                image_base64 = generate_image(sdwebui_api, emotions)
-                logger.info(f"그림 생성")
+                # # 이미지 생성
+                # image_base64 = generate_image(sdwebui_api, emotions)
+                # logger.info(f"그림 생성")
 
-                 # 분석 결과를 모든 클라이언트에게 전송
-                await send_analysis_to_clients(summarized_text, sentiment_results, image_base64, sender)
+                # 분석 결과를 모든 클라이언트에게 전송
+                await send_analysis_to_clients(summarized_text, sentiment_results, 'image_base64', sender) # 주석 풀기
+                # 주석 풀기# 주석 풀기# 주석 풀기# 주석 풀기
+                # 주석 풀기# 주석 풀기# 주석 풀기# 주석 풀기
+                # 주석 풀기# 주석 풀기# 주석 풀기# 주석 풀기
+                # 주석 풀기# 주석 풀기# 주석 풀기# 주석 풀기
 
                 # 처리된 문장 제거
                 logger.info(f"처리전 문장: {user_processed_messages[sender]}")
-                user_processed_messages[sender] = user_processed_messages[sender][5:]
+                user_processed_messages[sender] = user_processed_messages[sender][1:]
                 sentence_processor.textlist[sender] = []
                 logger.info(f"처리된 문장: {user_processed_messages[sender]}")
                 # sentence_processor.textlist = sentence_processor.textlist[5:]
@@ -128,26 +138,34 @@ async def process_message(message: str, websocket: WebSocket):
     try:
         data = json.loads(message)
         sender = data.get("sender")
+        print(sender)
         text = data.get("text")
 
         if sender and text:
-            # sender별로 문장 리스트 관리
-            if sender not in user_sentences:
-                user_sentences[sender] = []
-                asyncio.create_task(process_sentences(sender))
+            allText.append(text)
+            logger.info(f"allText {allText}")
+            if text.startswith('name:'):
+                username = text.split(':')[1]
+                user_message = json.dumps({"sender": sender, "text": f"{username} has joined the chat."})
+                for connection in active_connections:
+                    await connection.send_text(user_message)
+            else:
+                if sender not in user_sentences:
+                    user_sentences[sender] = []
+                    asyncio.create_task(process_sentences(sender))
             
-            user_sentences[sender].append(text)
-            logger.info(f"Current sentence list for {sender}: {user_sentences[sender]}")
-            # processed_messages = sentence_processor.process_chat(text)
-            if sender not in user_processed_messages:
-                user_processed_messages[sender] = []
-            user_processed_messages[sender] = sentence_processor.process_chat(sender, text)
-            logger.info(f"Processed messages from {sender}: {user_processed_messages}")
+                user_sentences[sender].append(text)
+                logger.info(f"Current sentence list for {sender}: {user_sentences[sender]}")
+                # processed_messages = sentence_processor.process_chat(text)
+                if sender not in user_processed_messages:
+                    user_processed_messages[sender] = []
+                user_processed_messages[sender], current_sentence[sender] = sentence_processor.process_chat(sender, text)
+                logger.info(f"Processed messages from {sender}: {user_processed_messages}")
 
-            # 웹소켓을 통해 모든 클라이언트에게 메시지 전송
-            for connection in active_connections:
-                await connection.send_text(json.dumps({"sender": sender, "text": text, "type": "message"}))
-            logger.info(f"Sent response to all clients: {message}")
+                # 웹소켓을 통해 모든 클라이언트에게 메시지 전송
+                for connection in active_connections:
+                    await connection.send_text(json.dumps({"sender": sender, "text": text, "type": "message"}))
+                logger.info(f"Sent response to all clients: {message}")
         else:
             logger.error("Invalid message format")
     except json.JSONDecodeError as e:

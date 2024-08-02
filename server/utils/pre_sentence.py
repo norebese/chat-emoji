@@ -19,7 +19,6 @@ class SentenceProcessor:
         return any(pos.startswith(('VV', 'VA', 'XSV')) for _, pos in pos_text)
 
     def process_chat(self, sender, chat_message):
-        logger.info(f"process_chat 들어옴")
         if sender not in self.current_sentence:
             self.current_sentence[sender] = []
         if sender not in self.textlist:
@@ -38,7 +37,7 @@ class SentenceProcessor:
         logger.info(f"Current sentence for {sender}: {self.current_sentence[sender]}")
         logger.info(f"Current textlist for {sender}: {self.textlist[sender]}")
 
-        return self.textlist[sender]
+        return self.textlist[sender], self.current_sentence[sender]
 
 
 # 싱글톤 인스턴스 생성

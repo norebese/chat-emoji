@@ -2,11 +2,13 @@ $(document).ready(function() {
     const speechBubble = $("#SpeechBubble");
     const speechBubble2 = $("#SpeechBubble2");
 
+    // 전역 변수 선언
     let profileRightEmotion = {};
-
     let profileLeftEmotion = {};
 
-    function updateSpeechBubble(bubble, emotions) {
+    async function updateSpeechBubble(bubble, emotions) {
+        console.log(profileRightEmotion);
+        console.log(profileLeftEmotion);
         let content = "";
         for (let [emotion, percentage] of Object.entries(emotions)) {
             content += `${emotion}: ${percentage.toFixed(2)}<br>`;
@@ -14,141 +16,203 @@ $(document).ready(function() {
         bubble.html(content);
     }
 
+    function showSpeechBubble(bubble, emotions) {
+        updateSpeechBubble(bubble, emotions);
+        bubble.css({
+            "animation-name": "expand-bounce",
+            "animation-duration": "0.25s",
+            "display": "block"
+        });
+        // setTimeout(() => {
+        //     hideSpeechBubble(bubble);
+        // }, 5000);
+    }
+
+    function hideSpeechBubble(bubble) {
+        bubble.css({
+            "animation-name": "shrink",
+            "animation-duration": "0.1s",
+            "display": "none"
+        });
+    }
+
     $("#profileRight").hover(
         function() {
-            updateSpeechBubble(speechBubble, profileRightEmotion);
-            speechBubble.css({
-                "animation-name": "expand-bounce",
-                "animation-duration": "0.25s",
-                "display": "block"
-            });
+            showSpeechBubble(speechBubble, profileRightEmotion);
         },
         function() {
-            speechBubble.css({
-                "animation-name": "shrink",
-                "animation-duration": "0.1s",
-                "display": "none"
-            });
+            hideSpeechBubble(speechBubble);
         }
     );
+
     $("#profileLeft").hover(
         function() {
-            updateSpeechBubble(speechBubble2, profileLeftEmotion);
-            speechBubble2.css({
-                "animation-name": "expand-bounce",
-                "animation-duration": "0.25s",
-                "display": "block"
-            });
+            showSpeechBubble(speechBubble2, profileLeftEmotion);
         },
         function() {
-            speechBubble2.css({
-                "animation-name": "shrink",
-                "animation-duration": "0.1s",
-                "display": "none"
-            });
+            hideSpeechBubble(speechBubble2);
         }
     );
-});
 
-let ws = new WebSocket("ws://localhost:8000/ws");
-let userName;
-let userName2;
-let image64;
+    function toDataURL(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          var reader = new FileReader();
+          reader.onloadend = function() {
+            callback(reader.result);
+          }
+          reader.readAsDataURL(xhr.response);
+        };
+        xhr.open('GET', url);
+        xhr.responseType = 'blob';
+        xhr.send();
+      }
 
-document.getElementById('submitName').onclick = function() {
-    userName = document.getElementById('nameInput').value.trim();
-    document.getElementById('userProfileName').textContent = userName + ' (나)';
-    if (userName) {
-        document.getElementById('nameInputDiv').style.display = 'none';
-        document.getElementsByClassName('footer')[0].style.display = 'flex';
-    } else {
-        alert("이름을 입력해주세요.");
+    let ws = new WebSocket("ws://localhost:8000/ws");
+    let userName;
+    let userName2;
+
+    document.getElementById('submitName').onclick = function() {
+        userName = document.getElementById('nameInput').value.trim();
+        document.getElementById('userProfileName').textContent = userName + ' (나)';
+        if (userName) {
+            document.getElementById('nameInputDiv').style.display = 'none';
+            document.getElementsByClassName('footer')[0].style.display = 'flex';
+            document.getElementsByClassName('profile_area')[0].style.display = 'flex';
+            document.getElementsByClassName('content_box')[0].style.display = 'flex';
+            document.getElementById('openModalBtn').style.display = 'flex';
+            // const fs = require('fs');
+
+            // let readFile = fs.readFileSync('client\avatar_male_man_person_user_icon.png'); //이미지 파일 읽기
+
+            // let encode = Buffer.from(readFile).toString('base64'); //파일 인코딩
+
+            // let makeEncodeFile = fs.writeFileSync('./encodeFile', encode) //인코딩 파일 만들기
+            ws.send(JSON.stringify({ sender: userName, text: 'name:' + userName}));
+        } else {
+            alert("이름을 입력해주세요.");
+        }
+    };
+    document.getElementById('clicksubmit').onclick = function() {
+        sendMessage()
     }
-    // sample = "iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAYAAAB/HSuDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe"
-    // const base64Url = `data:image/png;base64,${sample}`;
-    // const imgElement = document.getElementById('yourImage');
-    // imgElement.src = base64Url;
-};
 
-function sendMessage() {
-    let messageInput = document.getElementById("messageInput");
-    let name = userName.trim();
-    let message = messageInput.value.trim();
-    
-    if (message !== "") {
-        let data = JSON.stringify({ sender: name, text: message });
-        ws.send(data);
-        messageInput.value = "";
+    function sendMessage() {
+        let messageInput = document.getElementById("messageInput");
+        let name = userName.trim();
+        let message = messageInput.value.trim();
+
+        if (message) {
+            let data = JSON.stringify({ sender: name, text: message });
+            ws.send(data);
+            messageInput.value = "";
+            let chat = document.querySelector('.chat_area');
+            chat.scrollTop = chat.scrollHeight;
+        }else {
+            alert("채팅을 입력해주세요.");
+        }
+        return false;
     }
-    return false;
-}
 
-document.getElementById("messageInput").addEventListener("keypress", function(event) {
-    if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        sendMessage();
-    }
-});
+    document.getElementById("messageInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
 
-async function processImage(data) {
-    console.log(data);
-    let image64 = data.image;
+    ws.onmessage = async function(event) {
+        let data = JSON.parse(event.data);
 
-    // document.getElementById('summary').textContent = data.summary;
-    // document.getElementById('sentiment').textContent = JSON.stringify(data.sentiment);
-    // let sentimentArray = data.summary;
-    // let sentiment = {};
+        if (!userName2 && data.sender !== userName) {
+            userName2 = data.sender;
+            console.log(userName2)
+            document.getElementById('userProfileName2').textContent = userName2 + ' (상대방)';
+        }
 
-    // sentimentArray.forEach(item => {
-    //     sentiment[item.label] = item.score;
-    // });
+        if (data.type === 'message') {
+            let messageElement = document.createElement("div");
 
-    // if (sender === userName) {
-    //     profileRightEmotion = sentiment;
-    // } else {
-    //     profileLeftEmotion = sentiment;
-    // }
+            if (data.sender === userName) {
+                messageElement.className = "chat_box send";
+            } else {
+                messageElement.className = "chat_box receive";
+            }
+            messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.text}`;
+            document.querySelector(".chat_area").appendChild(messageElement);
+            let chat = document.querySelector('.chat_area');
+            chat.scrollTop = chat.scrollHeight;
+        } else if (data.type === 'analysis') {
+            await processImage(data);
+            let sentimentArray = data.sentiment;
+            let sentiment = {};
 
-    if(data.sender == userName){
-        let imgElement = document.getElementById('myImage');
-        imgElement.src = 'data:image/png;base64,' + image64;
-    }else{
-        let imgElement = document.getElementById('yourImage');
-        imgElement.src = 'data:image/png;base64,' + image64;
-    }
-}
+            document.getElementById('modalText').innerText = data.summary
+            
+            sentimentArray.forEach(item => {
+                sentiment[item.label] = item.score;
+            });
 
-ws.onmessage = async function(event) {
-    let data = JSON.parse(event.data);
-    if (!userName2 && data.sender != userName) {
-        userName2 = data.sender;
-        document.getElementById('userProfileName2').textContent = userName2 + ' (상대방)';
-    }
-    if (data.type === 'message') {
-        let messageElement = document.createElement("div");
+            if(data.sender == userName){
+                profileRightEmotion = sentiment
+                showSpeechBubble(speechBubble, sentiment);
+            }else{
+                profileLeftEmotion = sentiment
+                showSpeechBubble(speechBubble2, sentiment);
+            }
+        }else if (data.type === 'sentiment_results') {
+            let sentimentArray = data.data;
+            let sentiment = {};
+            
+            sentimentArray.forEach(item => {
+                sentiment[item.label] = item.score;
+            });
+
+            if(data.sender == userName){
+                profileRightEmotion = sentiment
+                showSpeechBubble(speechBubble, sentiment);
+            }else{
+                profileLeftEmotion = sentiment
+                showSpeechBubble(speechBubble2, sentiment);
+            }
+        }
+    };
+
+    async function processImage(data) {
+        console.log(data);
+        let image64 = data.image;
 
         if (data.sender === userName) {
-            messageElement.className = "chat_box send";
+            let imgElement = document.getElementById('myImage');
+            imgElement.src = 'data:image/png;base64,' + image64;
         } else {
-            messageElement.className = "chat_box receive";
-        }
-        messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.text}`;
-        document.querySelector(".chat_area").appendChild(messageElement);
-    } else if (data.type === 'analysis') {
-        await processImage(data);
-    }else if (data.type === 'sentiment_results') {
-        let sender = data.sender;
-        let sentimentArray = data.data;
-        let sentiment = {};
-
-        sentimentArray.forEach(item => {
-            sentiment[item.label] = item.score;
-        });
-
-        if (sender === userName) {
-            profileRightEmotion = sentiment;
-        } else {
-            profileLeftEmotion = sentiment;
+            let imgElement = document.getElementById('yourImage');
+            imgElement.src = 'data:image/png;base64,' + image64;
         }
     }
-};
+});
+
+const modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+const btn = document.getElementById("openModalBtn");
+
+// Get the <span> element that closes the modal
+const span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}

@@ -36,17 +36,26 @@ body {
 
 .title{
     align-self: center;
+    display: flex;
+    align-items: center;
+}
+
+.title button{
+    width: 80px;
+    height: 30px;
+    margin-left: 20px;
 }
 
 .profile_area{
-    display: flex;
-    justify-content: space-evenly;
+    display: none;
+    justify-content: space-between;
 }
 .profile{
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    position: relative;
 }
 .userimg {
     position: relative;
@@ -63,17 +72,18 @@ body {
     max-height:200px;
 }
 .chat_area {
+    width: 100%;
     overflow-y: auto; /* 세로 스크롤바가 생기도록 설정 */
     padding: 20px;
     height: calc(100% - 20px); /* content_box의 높이에서 패딩 값을 제외한 높이 설정 */
     -ms-overflow-style: none;
  }
 .content_box{
+    display: none;
     height: 100%;
     width: 100%;
     box-sizing: border-box;
     overflow-y: hidden;
-    display: flex;
     justify-content: center;
 }
 .chat_box {
@@ -107,8 +117,9 @@ body {
     display: flex;
     justify-content: center;
 }
-form{
+.form{
     display: flex;
+    width: 100%;
     padding: 10px;
     border-top: 1px solid #ddd;
 }
@@ -124,7 +135,7 @@ textarea{
     resize: none;
 }
 
-button[type="submit"] {
+button {
     padding: 10px 20px;
     font-size: 1em;
     color: #fff;
@@ -133,7 +144,7 @@ button[type="submit"] {
     border-radius: 8px;
     cursor: pointer;
 }
-button[type="submit"]:hover {
+button:hover {
     background-color: #3700b3;
 }
 
@@ -165,6 +176,7 @@ button[type="submit"]:hover {
     margin-right: 10px;
     font-family: 'Pretendard-Regular';
     resize: none;
+    margin-bottom: 50%;
 }
 
 #submitName{
@@ -179,15 +191,15 @@ button[type="submit"]:hover {
 
 #SpeechBubble {
     position: absolute;
-    transform-origin: 0% 100%;
+    transform-origin: 100% 0%;
     text-align: center;
     background-color: #5a5a5a;
     color: white;
     border-radius: 10px;
-    width: 150px;
+    width: 250px;
     padding: 10px;
-    right: 210px;
-    top: 60px;
+    right: 280px;
+    top: 120px;
     transform: scale(0);
     animation-fill-mode: forwards;
   }
@@ -198,11 +210,11 @@ button[type="submit"]:hover {
     width: 0;
     position: absolute;
     bottom: -25px;
-    left: 5px;
+    right: 0px;
     border-style: solid;
     border-width: 15px;
     border-color: #5a5a5a transparent transparent #5a5a5a;
-    transform: rotate(10deg);
+    transform: rotate(440deg);
   }
 
   #SpeechBubble2 {
@@ -212,10 +224,10 @@ button[type="submit"]:hover {
     background-color: #5a5a5a;
     color: white;
     border-radius: 10px;
-    width: 120px;
+    width: 250px;
     padding: 10px;
-    left: 240px;
-    top: 60px;
+    left: 280px;
+    top: 260px;
     transform: scale(0);
     animation-fill-mode: forwards;
   }
@@ -225,12 +237,12 @@ button[type="submit"]:hover {
     display: block;
     width: 0;
     position: absolute;
-    bottom: -25px;
-    right: 5px;
+    bottom: 15px;
+    left: 0px;
     border-style: solid;
     border-width: 15px;
     border-color: #5a5a5a transparent transparent #5a5a5a;
-    transform: rotate(440deg);
+    transform: rotate(-100deg);
   }
 
   @keyframes expand-bounce {
@@ -253,3 +265,51 @@ button[type="submit"]:hover {
       transform: scale(0);
     }
   }
+
+  #openModalBtn{
+    display: none;
+  }
+
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#openModalBtn{
+    display: none;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}

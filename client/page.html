@@ -17,25 +17,22 @@
     <div class="header">
         <div class="title">
             <h1>Emotion Chat</h1>
+            <button id="openModalBtn">요약</button>
         </div>
         <div class="profile_area">
             <div class="profile another">
                 <div class="userimg" id="profileLeft">
                     <img id="yourImage" src="./avatar_male_man_person_user_icon.png">
-                    <div id="SpeechBubble2"></div>
+                    <div id="SpeechBubble2" class="speech-bubble">정보 없음</div>
                 </div>
-                <div class="username" id="userProfileName2">
-                    None
-                </div>
+                <div class="username" id="userProfileName2"></div>
             </div>
             <div class="profile user">
                 <div class="userimg" id="profileRight">
-                    <img id="myImage" src="./avatar_user_woman_female_person_icon.png">
-                    <div id="SpeechBubble"></div>
+                    <img id="myImage" src="./avatar_male_man_person_user_icon.png">
+                    <div id="SpeechBubble" class="speech-bubble">정보 없음</div>
                 </div>
-                <div class="username" id="userProfileName">
-                    None(me)
-                </div>
+                <div class="username" id="userProfileName"></div>
             </div>
         </div>
     </div>
@@ -45,14 +42,21 @@
         </div>
     </div>
     <div class="footer">
-        <form onsubmit="return sendMessage();">
+        <div class="form">
             <textarea id="messageInput" placeholder="이곳을 눌러 채팅을 시작하세요!"></textarea>
-            <button type="submit">보내기</button>
-        </form>
+            <button id="clicksubmit">보내기</button>
+        </div>
     </div>
     <div class="name_input" id="nameInputDiv">
         <input type="text" id="nameInput" placeholder="이름을 입력하세요">
         <button id="submitName">확인</button>
+    </div>
+    <input type="file" id="fileInput" style="display:none;" />
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="modalText"></p>
+        </div>
     </div>
 </body>
 </html>
