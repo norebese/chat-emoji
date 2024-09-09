@@ -1,10 +1,11 @@
 import requests
 import base64
 import io
+import os
 from PIL import Image
 
 # WebUI의 주소와 포트를 적절히 수정하세요
-url = "WebUI의 주소와 포트"
+url = os.getenv('STABLE_DIFFUSION_API_KEY')
 
 payload = {
     "prompt": "(animation:1.2),best quality, (clean_background, white_background ),(close-up face shot:1.3), Character,emotion, (Annoyed:0.86), (Complain:0.78), (Difficult:0.71)",
