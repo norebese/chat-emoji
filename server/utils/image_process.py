@@ -4,7 +4,7 @@ import io
 from PIL import Image
 
 # WebUI의 주소와 포트를 적절히 수정하세요
-url = "http://sooserver.duckdns.org:17860"
+url = "WebUI의 주소와 포트"
 
 payload = {
     "prompt": "(animation:1.2),best quality, (clean_background, white_background ),(close-up face shot:1.3), Character,emotion, (Annoyed:0.86), (Complain:0.78), (Difficult:0.71)",
