@@ -92,5 +92,5 @@ chat emoji는 실시간 1:1 채팅을 바탕으로 자신과 상대방의 감정
 
 ## 프론트엔드 실행하기
 
-1. `client` 폴더 위치에서 page.html 파일을 live server에서 실행합니다.
+1. `client` 폴더 위치에서 page.html 파일을 웹브라우저에서 실행합니다.
 
