@@ -33,7 +33,7 @@ chat emoji는 실시간 1:1 채팅을 바탕으로 자신과 상대방의 감정
 ## 개발 도구
 * 개발도구 : pycharm, VSC
 * 개발언어 및 프레임워크 : HTML, CSS, JavaScript, Jquery, fastapi, Websocket
-* API : fastapi, deepl_api, stable-diffusion-webui-api
+* API : deepl_api, stable-diffusion-webui-api
 * AI model: mecab 형태소 분석기, kote 감정 분석기
 
 `Communication`
@@ -69,13 +69,22 @@ chat emoji는 실시간 1:1 채팅을 바탕으로 자신과 상대방의 감정
     ```bash
     pip install -r requirements.txt
     ```
-4. 터미널에서 아래 명령어를 입력해 `server` 폴더 위치로 이동합니다.
+
+4. .env 파일 생성 및 환경 변수 설정:
+
+    Deepl API 키와 Stable Diffusion 키 값을 `.env` 파일에 저장해야 합니다. 프로젝트 루트 폴더에 `.env` 파일을 생성하고, 아래와 같이 키 값을 지정합니다:
+    ```bash
+    DEEPL_API_KEY=your_deepl_api_key
+    STABLE_DIFFUSION_API_KEY=your_stable_diffusion_api_key
+    ```
+
+5. 터미널에서 아래 명령어를 입력해 `server` 폴더 위치로 이동합니다.
 
     ```bash
     cd server
     ```
 
-5. 서버 시작하기:
+6. 서버 시작하기:
 
     ```bash
     python main.py
