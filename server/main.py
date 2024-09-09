@@ -10,14 +10,14 @@ from utils.translation_keyword import deep_l
 import logging
 import asyncio
 import json
-import config
+import os
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-deepl_api = config.DEEPL_API_KEY
-sdwebui_api = config.SDWEBUI_API
+deepl_api = os.getenv('DEEPL_API_KEY')
+sdwebui_api = os.getenv('STABLE_DIFFUSION_API_KEY')
 
 app = FastAPI()
 
