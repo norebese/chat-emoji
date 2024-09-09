@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 # env로드, 및 값을 불러와 할당
 load_dotenv()
-auth_key = os.getenv('DeepL_API_Key')
+auth_key = os.getenv('DEEPL_API_KEY')
 translator = deepl.Translator(auth_key)
 
 def deep_l(emotion_list,sentence,translator=translator) :
